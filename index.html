@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Anonyo</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=Syne+Mono&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #0d0d0f;
+      --surface: #141417;
+      --border: rgba(255,255,255,0.07);
+      --fg: #e8e6e1;
+      --muted: #555;
+      --glow: #a78bfa;
+      --glow-dim: rgba(167,139,250,0.12);
+    }
+
+    html, body { height: 100%; }
+
+    body {
+      background: var(--bg);
+      color: var(--fg);
+      font-family: 'Syne Mono', monospace;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 2rem;
+      overflow: hidden;
+    }
+
+    /* Grain overlay */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='1'/%3E%3C/svg%3E");
+      opacity: 0.028;
+      pointer-events: none;
+      z-index: 100;
+    }
+
+    /* Ambient glow blob */
+    body::after {
+      content: '';
+      position: fixed;
+      width: 500px;
+      height: 500px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(167,139,250,0.08) 0%, transparent 70%);
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -60%);
+      pointer-events: none;
+      animation: pulse 6s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: translate(-50%, -60%) scale(1); opacity: 0.7; }
+      50% { transform: translate(-50%, -58%) scale(1.08); opacity: 1; }
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(18px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .card {
+      width: 100%;
+      max-width: 380px;
+      position: relative;
+      z-index: 1;
+      animation: fadeUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    /* Avatar */
+    .avatar-wrap {
+      position: relative;
+      width: 64px;
+      height: 64px;
+      margin-bottom: 1.5rem;
+    }
+
+    .avatar {
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      background: #1e1b2e;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      color: var(--glow);
+      border: 1px solid rgba(167,139,250,0.25);
+      box-shadow: 0 0 20px rgba(167,139,250,0.15);
+      /* Swap in your photo: background: url('photo.jpg') center/cover; */
+    }
+
+    .avatar-ring {
+      position: absolute;
+      inset: -4px;
+      border-radius: 50%;
+      border: 1px solid rgba(167,139,250,0.2);
+      animation: spin 8s linear infinite;
+    }
+
+    .avatar-ring::before {
+      content: '';
+      position: absolute;
+      top: -2px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      background: var(--glow);
+      box-shadow: 0 0 8px var(--glow);
+    }
+
+    @keyframes spin {
+      from { transform: rotate(0deg); }
+      to   { transform: rotate(360deg); }
+    }
+
+    /* Name */
+    h1 {
+      font-family: 'Syne', sans-serif;
+      font-size: 2rem;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      color: var(--fg);
+      margin-bottom: 0.2rem;
+    }
+
+    .handle {
+      font-size: 0.68rem;
+      color: var(--muted);
+      letter-spacing: 0.1em;
+      margin-bottom: 2.4rem;
+    }
+
+    /* Link groups */
+    .group-label {
+      font-size: 0.58rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 0.5rem;
+      margin-top: 1.6rem;
+    }
+
+    .group-label:first-of-type { margin-top: 0; }
+
+    .links {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .links li {
+      opacity: 0;
+      animation: fadeUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    .links li:nth-child(1) { animation-delay: 0.12s; }
+    .links li:nth-child(2) { animation-delay: 0.18s; }
+    .links li:nth-child(3) { animation-delay: 0.24s; }
+    .links li:nth-child(4) { animation-delay: 0.30s; }
+    .links li:nth-child(5) { animation-delay: 0.36s; }
+    .links li:nth-child(6) { animation-delay: 0.42s; }
+
+    .links a {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.85rem 1rem;
+      margin-bottom: 0.4rem;
+      text-decoration: none;
+      color: var(--fg);
+      font-size: 0.75rem;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      transition: background 0.2s, border-color 0.2s, box-shadow 0.2s, color 0.2s;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .links a::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, var(--glow-dim), transparent);
+      opacity: 0;
+      transition: opacity 0.25s;
+    }
+
+    .links a:hover {
+      border-color: rgba(167,139,250,0.3);
+      box-shadow: 0 0 16px rgba(167,139,250,0.1), inset 0 1px 0 rgba(255,255,255,0.04);
+      color: #fff;
+    }
+
+    .links a:hover::before { opacity: 1; }
+
+    .link-left {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      position: relative;
+    }
+
+    .link-icon {
+      font-size: 1rem;
+      width: 1.2rem;
+      text-align: center;
+      opacity: 0.7;
+    }
+
+    .arrow {
+      font-size: 0.8rem;
+      color: var(--muted);
+      transition: transform 0.2s, color 0.2s;
+      position: relative;
+    }
+
+    .links a:hover .arrow {
+      transform: translateX(4px);
+      color: var(--glow);
+    }
+
+    /* Secondary links — smaller, more muted */
+    .links.secondary a {
+      padding: 0.7rem 1rem;
+      background: transparent;
+      border-color: rgba(255,255,255,0.04);
+      font-size: 0.7rem;
+      color: var(--muted);
+    }
+
+    .links.secondary a:hover {
+      color: var(--fg);
+      border-color: rgba(167,139,250,0.2);
+      background: rgba(255,255,255,0.02);
+    }
+
+    .footer {
+      margin-top: 2.5rem;
+      font-size: 0.6rem;
+      color: #2a2a2e;
+      letter-spacing: 0.06em;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+
+    <div class="avatar-wrap">
+      <div class="avatar">✦</div>
+      <div class="avatar-ring"></div>
+    </div>
+
+    <h1>Anonyo</h1>
+    <p class="handle">anonyorahman29@gmail.com</p>
+
+    <!-- Main links -->
+    <p class="group-label">Find me</p>
+    <ul class="links">
+      <li>
+        <a href="https://www.instagram.com/its_anonyo/" target="_blank" rel="noopener">
+          <span class="link-left"><span class="link-icon">◈</span> Instagram</span>
+          <span class="arrow">→</span>
+        </a>
+      </li>
+      <li>
+        <a href="https://www.facebook.com/mahmudur.rahman.328652/" target="_blank" rel="noopener">
+          <span class="link-left"><span class="link-icon">◈</span> Facebook</span>
+          <span class="arrow">→</span>
+        </a>
+      </li>
+     <li>
+        <a href="https://steamcommunity.com/id/its_anonyo/" target="_blank" rel="noopener">
+          <span class="link-left"><span class="link-icon">◈</span> Steam</span>
+          <span class="arrow">→</span>
+        </a>
+      </li>
+    </ul>
+
+    <!-- Secondary links -->
+    <p class="group-label">Also</p>
+    <ul class="links secondary">
+       <li>
+        <a href="https://open.spotify.com/user/cyzhislji001f1ara1kkkrcnu?si=402064adb30c48cb" target="_blank" rel="noopener">
+          <span class="link-left"><span class="link-icon">◇</span> Spotify</span>
+          <span class="arrow">→</span>
+        </a>
+      </li>
+      <li>
+        <a href="https://discordapp.com/users/meanon" target="_blank" rel="noopener">
+          <span class="link-left"><span class="link-icon">◇</span> Discord</span>
+          <span class="arrow">→</span>
+        </a>
+      </li>
+      <li>
+        <a href="https://www.chess.com/member/anonyo08" target="_blank" rel="noopener">
+          <span class="link-left"><span class="link-icon">◇</span> Chess.com</span>
+          <span class="arrow">→</span>
+        </a>
+      </li>
+    </ul>
+
+    <p class="footer">its_anonyo · made with html</p>
+  </div>
+</body>
+</html>
