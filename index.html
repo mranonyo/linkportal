@@ -28,8 +28,7 @@
       align-items: center;
       justify-content: center;
       min-height: 100vh;
-      padding: 2rem;
-      overflow: hidden;
+
     }
 
     /* Grain overlay */
@@ -70,10 +69,17 @@
 
     .card {
       width: 100%;
-      max-width: 380px;
+      max-width: 420px;
       position: relative;
       z-index: 1;
       animation: fadeUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    @media (min-width: 768px) {
+      .card { max-width: 560px; }
+      h1 { font-size: 2.6rem; }
+      .links a { padding: 1rem 1.25rem; font-size: 0.8rem; }
+      .links.secondary a { padding: 0.8rem 1.25rem; }
     }
 
     /* Avatar */
@@ -128,7 +134,7 @@
 
     /* Name */
     h1 {
-      font-family: 'Syne', sans-serif;
+      font-family: 'Syne', 'Helvetica Neue', Arial, sans-serif;
       font-size: 2rem;
       font-weight: 800;
       letter-spacing: -0.03em;
@@ -250,12 +256,7 @@
       background: rgba(255,255,255,0.02);
     }
 
-    .footer {
-      margin-top: 2.5rem;
-      font-size: 0.6rem;
-      color: #2a2a2e;
-      letter-spacing: 0.06em;
-    }
+
   </style>
 </head>
 <body>
@@ -310,12 +311,4 @@
       <li>
         <a href="https://www.chess.com/member/anonyo08" target="_blank" rel="noopener">
           <span class="link-left"><span class="link-icon">◇</span> Chess.com</span>
-          <span class="arrow">→</span>
-        </a>
-      </li>
-    </ul>
-
-    <p class="footer">its_anonyo · made with html</p>
-  </div>
-</body>
-</html>
+          <span class="arrow">
